@@ -1,11 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { HeroBannerComponent } from './components/hero-banner/hero-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [RouterOutlet, HeroBannerComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
+
 export class App {
-  protected readonly title = signal('ecommerce');
 }

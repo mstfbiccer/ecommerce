@@ -1,0 +1,52 @@
+<h2>Ürün Detay Sayfası</h2>
+<p>ID: {{ id }}</p>
+
+<button (click)="toggleDetails()" class="details-btn">
+  {{ showDetails ? 'Detayları Gizle' : 'Ürün Detaylarını Göster' }}
+</button>
+
+@if (showDetails && productDetails$) {
+  @defer (on immediate) {
+    @if (productDetails$ | async; as product) {
+      @if (product) {
+        <div class="product-details">
+          <h3>Ürün Bilgileri</h3>
+          <table class="product-table">
+            <tr>
+              <td><strong>ID:</strong></td>
+              <td>{{ product.id }}</td>
+            </tr>
+            <tr>
+              <td><strong>İsim:</strong></td>
+              <td>{{ product.name }}</td>
+            </tr>
+            <tr>
+              <td><strong>Fiyat:</strong></td>
+              <td>{{ product.price }} TL</td>
+            </tr>
+            <tr>
+              <td><strong>Açıklama:</strong></td>
+              <td>{{ product.description }}</td>
+            </tr>
+            <tr>
+              <td><strong>Kategori:</strong></td>
+              <td>{{ product.category }}</td>
+            </tr>
+          </table>
+        </div>
+      } @else {
+        <div class="error">
+          <p>Ürün bulunamadı.</p>
+        </div>
+      }
+    }
+  } @loading {
+    <div class="loading">
+      <p>Ürün detayları yükleniyor...</p>
+    </div>
+  } @error {
+    <div class="error">
+      <p>Ürün detayları yüklenirken hata oluştu.</p>
+    </div>
+  }
+}

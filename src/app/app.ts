@@ -4,7 +4,7 @@ import { Component, signal } from '@angular/core';
   selector: 'app-root',
   imports: [],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss'],
 })
 export class App {
   protected readonly title = signal('ecommerce');

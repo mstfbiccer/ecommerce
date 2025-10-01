@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpEvent } from '@angular/common/http';
 import { Observable, map, retry, timer, throwError } from 'rxjs';
 
 export interface ProductType {
@@ -29,7 +29,7 @@ export class Product {
   constructor(private http: HttpClient) {}
 
   list(): Observable<ProductType[]> {
-    return this.http.get<ProductType[]>(`${this.baseUrl}/productssss`).pipe(
+    return this.http.get<ProductType[]>(`${this.baseUrl}/products`).pipe(
       retry({
         count: 3,
         delay: (error: HttpErrorResponse, retryCount: number) => {
@@ -74,6 +74,31 @@ export class Product {
         name: category,
         image: this.getCategoryImage(category)
       })))
+    );
+  }
+
+  uploadProductCatalog(file: File): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('catalog', file);
+    
+    return this.http.post(`${this.baseUrl}/upload`, formData, {
+      reportProgress: true,
+      observe: 'events'
+    }).pipe(
+      retry({
+        count: 2,
+        delay: (error: HttpErrorResponse, retryCount: number) => {
+          console.log(`Upload retry attempt ${retryCount} for error:`, error.status);
+          if (error.status === 413 || error.status === 415) {
+            // File too large or unsupported media type - don't retry
+            return throwError(() => error);
+          }
+          if (error.status === 0 || error.status >= 500) {
+            return timer(1000);
+          }
+          return throwError(() => error);
+        }
+      })
     );
   }
 

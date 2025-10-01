@@ -11,6 +11,95 @@
       transform: scale(1.02);
     }
   }
+
+  .slide {
+    &.active {
+      z-index: 2;
+    }
+    
+    img {
+      transition: transform 20s ease-in-out;
+    }
+    
+    &.active img {
+      transform: scale(1.1);
+    }
+  }
+  
+  // Enhanced button hover effects
+  .group:hover svg {
+    transform: translateX(4px);
+  }
+  
+  // Backdrop blur support fallback
+  @supports not (backdrop-filter: blur(10px)) {
+    .backdrop-blur-md {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .backdrop-blur-sm {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem !important;
+      line-height: 1.2;
+    }
+    
+    h2 {
+      font-size: 1.25rem !important;
+    }
+    
+    p {
+      font-size: 1rem !important;
+    }
+    
+    .flex-col {
+      gap: 1rem;
+    }
+    
+    // Hide floating elements on small screens
+    .hidden.lg\\:block {
+      display: none !important;
+    }
+  }
+  
+  // Navigation arrows responsive
+  @media (max-width: 768px) {
+    .absolute.left-6,
+    .absolute.right-6 {
+      display: none;
+    }
+  }
+  
+  // Smooth transitions for all interactive elements
+  button, a {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  // Improve text contrast on light backgrounds
+  .text-shadow-strong {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 1px 1px 2px rgba(0, 0, 0, 0.6);
+  }
+  
+  // Gradient overlay improvements
+  .gradient-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
 }
 
 // Banner container için ek stiller
@@ -63,5 +152,101 @@
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+// Hero Banner Custom Animations
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(-180deg);
+  }
+}
+
+// Animation Classes
+.animate-slideInUp {
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .hero-banner {
+    .slide img {
+      filter: brightness(0.6) contrast(1.2);
+    }
+    
+    h1, h2, p {
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 1);
+    }
+    
+    .bg-gradient-to-r {
+      background: rgba(0, 0, 0, 0.8) !important;
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner {
+    .slide,
+    .animate-slideInUp,
+    .animate-float,
+    .animate-float-delayed {
+      animation: none !important;
+      transition: opacity 0.3s ease !important;
+    }
+    
+    img {
+      transform: none !important;
+      transition: none !important;
+    }
+    
+    .transform {
+      transition: none !important;
+    }
+  }
+}
+
+// Dark mode improvements
+@media (prefers-color-scheme: dark) {
+  .hero-banner {
+    .border-white\\/20 {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .bg-black\\/30 {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
   }
 }

@@ -1,10 +1,9 @@
 import { Component } from "@angular/core";
-import { RouterModule } from "@angular/router";
-
+import { ProductListComponent } from "../components/product-list";
 
 @Component({
   standalone: true,
-  imports: [RouterModule],
-  templateUrl: './home-page.html'
+  imports: [ProductListComponent],
+  template: '<app-product-list></app-product-list>'
 })
 export class HomePage {}

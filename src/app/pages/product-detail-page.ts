@@ -1,43 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product, ProductType } from '../services/product';
-import { AsyncPipe } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [CommonModule],
   templateUrl: 'product-detail-page.html',
   styleUrls: ['product-detail-page.scss']
 })
-export class ProductDetailPage {
+export class ProductDetailPage implements OnInit {
   id: string | null;
   showDetails = false;
-  productDetails$: Observable<ProductType | undefined> | null = null;
+  productDetails$: Observable<ProductType> | null = null;
 
   constructor(private route: ActivatedRoute, private productService: Product) {
     this.id = this.route.snapshot.paramMap.get('id');
   }
 
-  toggleDetails() {
-    this.showDetails = !this.showDetails;
-    if (this.showDetails && !this.productDetails$) {
+  ngOnInit() {
+    if (this.id) {
       this.loadProductDetails();
     }
   }
 
+  toggleDetails() {
+    this.showDetails = !this.showDetails;
+  }
+
   private loadProductDetails() {
     if (this.id) {
-      this.productDetails$ = new Observable(observer => {
-        this.productService.getById(parseInt(this.id!)).then(product => {
-          observer.next(product);
-          observer.complete();
-        }).catch(error => {
-          observer.error(error);
-        });
-      });
-    } else {
-      this.productDetails$ = of(undefined);
+      this.productDetails$ = this.productService.getById(parseInt(this.id));
     }
   }
 }

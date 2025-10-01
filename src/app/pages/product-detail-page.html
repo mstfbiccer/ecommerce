@@ -1,52 +1,91 @@
-<h2>Ürün Detay Sayfası</h2>
-<p>ID: {{ id }}</p>
-
-<button (click)="toggleDetails()" class="details-btn">
-  {{ showDetails ? 'Detayları Gizle' : 'Ürün Detaylarını Göster' }}
-</button>
-
-@if (showDetails && productDetails$) {
-  @defer (on immediate) {
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">Ürün Detayı</h2>
+    
     @if (productDetails$ | async; as product) {
-      @if (product) {
-        <div class="product-details">
-          <h3>Ürün Bilgileri</h3>
-          <table class="product-table">
-            <tr>
-              <td><strong>ID:</strong></td>
-              <td>{{ product.id }}</td>
-            </tr>
-            <tr>
-              <td><strong>İsim:</strong></td>
-              <td>{{ product.name }}</td>
-            </tr>
-            <tr>
-              <td><strong>Fiyat:</strong></td>
-              <td>{{ product.price }} TL</td>
-            </tr>
-            <tr>
-              <td><strong>Açıklama:</strong></td>
-              <td>{{ product.description }}</td>
-            </tr>
-            <tr>
-              <td><strong>Kategori:</strong></td>
-              <td>{{ product.category }}</td>
-            </tr>
-          </table>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Product Image -->
+        <div class="space-y-4">
+          <div class="aspect-square bg-white rounded-lg shadow-md overflow-hidden">
+            <img 
+              [src]="product.image" 
+              [alt]="product.title"
+              class="w-full h-full object-contain p-8">
+          </div>
         </div>
-      } @else {
-        <div class="error">
-          <p>Ürün bulunamadı.</p>
+
+        <!-- Product Info -->
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ product.title }}</h1>
+            <div class="flex items-center mb-4">
+              <span class="text-yellow-400 text-lg">★</span>
+              <span class="text-gray-600 ml-1">{{ product.rating.rate }} ({{ product.rating.count }} değerlendirme)</span>
+            </div>
+            <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm capitalize">
+              {{ product.category }}
+            </span>
+          </div>
+
+          <div class="border-t pt-6">
+            <div class="text-4xl font-bold text-blue-600 mb-4">
+              ${{ product.price }}
+            </div>
+          </div>
+
+          <div class="border-t pt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Ürün Açıklaması</h3>
+            <p class="text-gray-700 leading-relaxed">{{ product.description }}</p>
+          </div>
+
+          <div class="border-t pt-6 space-y-4">
+            <button class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+              Sepete Ekle
+            </button>
+            <button class="w-full bg-gray-200 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors font-semibold">
+              Favorilere Ekle
+            </button>
+          </div>
+
+          <!-- Product Details Toggle -->
+          <div class="border-t pt-6">
+            <button 
+              (click)="toggleDetails()" 
+              class="flex items-center justify-between w-full text-left py-2">
+              <span class="text-lg font-semibold text-gray-900">Teknik Detaylar</span>
+              <span class="text-2xl">{{ showDetails ? '−' : '+' }}</span>
+            </button>
+            
+            @if (showDetails) {
+              <div class="mt-4 bg-gray-50 rounded-lg p-4">
+                <table class="w-full">
+                  <tr class="border-b">
+                    <td class="py-2 font-semibold text-gray-700">Ürün ID:</td>
+                    <td class="py-2 text-gray-600">{{ product.id }}</td>
+                  </tr>
+                  <tr class="border-b">
+                    <td class="py-2 font-semibold text-gray-700">Kategori:</td>
+                    <td class="py-2 text-gray-600 capitalize">{{ product.category }}</td>
+                  </tr>
+                  <tr class="border-b">
+                    <td class="py-2 font-semibold text-gray-700">Değerlendirme:</td>
+                    <td class="py-2 text-gray-600">{{ product.rating.rate }}/5 ({{ product.rating.count }} kişi)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 font-semibold text-gray-700">Fiyat:</td>
+                    <td class="py-2 text-gray-600">${{ product.price }}</td>
+                  </tr>
+                </table>
+              </div>
+            }
+          </div>
         </div>
-      }
+      </div>
+    } @else {
+      <div class="text-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-500 text-lg">Ürün detayları yükleniyor...</p>
+      </div>
     }
-  } @loading {
-    <div class="loading">
-      <p>Ürün detayları yükleniyor...</p>
-    </div>
-  } @error {
-    <div class="error">
-      <p>Ürün detayları yüklenirken hata oluştu.</p>
-    </div>
-  }
-}
+  </div>
+</div>

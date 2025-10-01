@@ -6,7 +6,7 @@ import { UserFormComponentWithSkills } from './components/hero-banner/common/dyn
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,NameForm, SkillsFormComponent, UserFormComponentWithSkills],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })

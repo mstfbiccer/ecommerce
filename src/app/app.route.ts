@@ -11,7 +11,7 @@ export const appRoutes: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/home-page').then((m) => m.HomePage),
-    canActivate: [authGuard]
+    // canActivate: [authGuard] // Geçici olarak SSR test için kaldırıldı
   },
   {
     path: 'admin',

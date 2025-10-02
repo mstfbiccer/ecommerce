@@ -1,7 +1,7 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpEvent } from '@angular/common/http';
-import { Observable, map, retry, timer, throwError } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { Observable, map, retry, timer, throwError, of } from 'rxjs';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 
 export interface ProductType {
   id: number;
@@ -21,11 +21,17 @@ export interface CategoryType {
   image: string;
 }
 
+// Transfer State keys
+const PRODUCTS_KEY = makeStateKey<ProductType[]>('products');
+const CATEGORIES_KEY = makeStateKey<CategoryType[]>('categories');
+const PRODUCT_KEY = (id: number) => makeStateKey<ProductType>(`product-${id}`);
+
 @Injectable({
   providedIn: 'root'
 })
 export class Product {
   private platformId = inject(PLATFORM_ID);
+  private transferState = inject(TransferState);
   private baseUrl: string;
 
   constructor(private http: HttpClient) {
@@ -39,7 +45,15 @@ export class Product {
   }
 
   list(): Observable<ProductType[]> {
-    return this.http.get<ProductType[]>(`${this.baseUrl}/products`).pipe(
+    // Check if data exists in transfer state (from SSR)
+    const cachedProducts = this.transferState.get(PRODUCTS_KEY, null);
+    if (cachedProducts) {
+      // Remove from transfer state to free memory
+      this.transferState.remove(PRODUCTS_KEY);
+      return of(cachedProducts);
+    }
+
+    const products$ = this.http.get<ProductType[]>(`${this.baseUrl}/products`).pipe(
       retry({
         count: 3,
         delay: (error: HttpErrorResponse, retryCount: number) => {
@@ -51,10 +65,28 @@ export class Product {
         }
       })
     );
+
+    // Store in transfer state if on server
+    if (isPlatformServer(this.platformId)) {
+      products$.subscribe(products => {
+        this.transferState.set(PRODUCTS_KEY, products);
+      });
+    }
+
+    return products$;
   }
 
   getById(id: number): Observable<ProductType> {
-    return this.http.get<ProductType>(`${this.baseUrl}/products/${id}`).pipe(
+    // Check if data exists in transfer state (from SSR)
+    const productKey = PRODUCT_KEY(id);
+    const cachedProduct = this.transferState.get(productKey, null);
+    if (cachedProduct) {
+      // Remove from transfer state to free memory
+      this.transferState.remove(productKey);
+      return of(cachedProduct);
+    }
+
+    const product$ = this.http.get<ProductType>(`${this.baseUrl}/products/${id}`).pipe(
       retry({
         count: 3,
         delay: (error: HttpErrorResponse, retryCount: number) => {
@@ -66,10 +98,27 @@ export class Product {
         }
       })
     );
+
+    // Store in transfer state if on server
+    if (isPlatformServer(this.platformId)) {
+      product$.subscribe(product => {
+        this.transferState.set(productKey, product);
+      });
+    }
+
+    return product$;
   }
 
   getCategories(): Observable<CategoryType[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/products/categories`).pipe(
+    // Check if data exists in transfer state (from SSR)
+    const cachedCategories = this.transferState.get(CATEGORIES_KEY, null);
+    if (cachedCategories) {
+      // Remove from transfer state to free memory
+      this.transferState.remove(CATEGORIES_KEY);
+      return of(cachedCategories);
+    }
+
+    const categories$ = this.http.get<string[]>(`${this.baseUrl}/products/categories`).pipe(
       retry({
         count: 3,
         delay: (error: HttpErrorResponse, retryCount: number) => {
@@ -85,6 +134,15 @@ export class Product {
         image: this.getCategoryImage(category)
       })))
     );
+
+    // Store in transfer state if on server
+    if (isPlatformServer(this.platformId)) {
+      categories$.subscribe(categories => {
+        this.transferState.set(CATEGORIES_KEY, categories);
+      });
+    }
+
+    return categories$;
   }
 
   uploadProductCatalog(file: File): Observable<HttpEvent<any>> {

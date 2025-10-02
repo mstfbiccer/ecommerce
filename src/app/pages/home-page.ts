@@ -1,30 +1,45 @@
 import { Component } from "@angular/core";
-import { HeroBannerComponent } from "../components/hero-banner/hero-banner";
-import { CategoryGridComponent } from "../components/category-grid";
-import { ProductListComponent } from "../components/product-list";
-import { CatalogUploadComponent } from "../components/catalog-upload";
 
 @Component({
   standalone: true,
-  imports: [HeroBannerComponent, CategoryGridComponent, ProductListComponent, CatalogUploadComponent],
-  template: `
-    <div class="min-h-screen bg-gray-50">
-      <!-- Hero Banner -->
-      <div class="container mx-auto px-4 pt-8">
-        <app-hero-banner></app-hero-banner>
-      </div>
-
-      <!-- Catalog Upload Section -->
-      <div class="container mx-auto px-4">
-        <app-catalog-upload></app-catalog-upload>
-      </div>
-
-      <!-- Categories Section -->
-      <app-category-grid></app-category-grid>
-
-      <!-- Products Section -->
-      <app-product-list></app-product-list>
-    </div>
-  `
+  imports: [],
+  templateUrl: './home-page.html',
+  styles: [`
+    /* Custom styles for Beymen-inspired design */
+    section {
+      scroll-snap-align: start;
+    }
+    
+    .tracking-wide {
+      letter-spacing: 0.1em;
+    }
+    
+    .tracking-widest {
+      letter-spacing: 0.25em;
+    }
+    
+    /* Smooth scrolling for full-page sections */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Custom hover effects */
+    .group:hover .group-hover\\:scale-105 {
+      transform: scale(1.05);
+    }
+    
+    /* Typography enhancements */
+    h1, h2, h3 {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Gradient text effects */
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  `]
 })
 export class HomePage {}

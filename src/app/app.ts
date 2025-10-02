@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NameForm } from './components/hero-banner/common/user-form';
-import { SkillsFormComponent } from './components/hero-banner/common/dynamic-user-form';
-import { UserFormComponentWithSkills } from './components/hero-banner/common/dynamic-custom-form';
+import { RouterOutlet, RouterModule } from '@angular/router';
+import { MiniCartComponent } from './components/mini-cart';
+import { AuthService } from './services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterModule, MiniCartComponent, CommonModule],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
-
 export class App {
+  constructor(public authService: AuthService) {}
 }

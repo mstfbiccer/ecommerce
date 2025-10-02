@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { Product, ProductType } from '../services/product';
+import { CartStore } from '../services/cart.store';
 import { Subject, startWith, debounceTime, distinctUntilChanged, Observable, of } from 'rxjs';
 import { takeUntil, map, catchError } from 'rxjs/operators';
 
@@ -142,12 +143,23 @@ interface FilterForm {
               <span class="text-2xl font-bold text-blue-600">\${{ product.price }}</span>
             </div>
             
-            <!-- Action Button -->
-            <a 
-              [routerLink]="['/products', product.id]"
-              class="block w-full bg-blue-600 text-white text-center py-2 rounded-md hover:bg-blue-700 transition-colors">
-              Detayları Gör
-            </a>
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+              <a 
+                [routerLink]="['/products', product.id]"
+                class="block w-full bg-blue-600 text-white text-center py-2 rounded-md hover:bg-blue-700 transition-colors">
+                Detayları Gör
+              </a>
+              <button 
+                (click)="addToCart(product)"
+                class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.8 9M7 13l-1.8-9m0 0h15.4M7 13h10"></path>
+                </svg>
+                Sepete Ekle
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -176,6 +188,7 @@ interface FilterForm {
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  cartStore = inject(CartStore);
   
   products: ProductType[] = [];
   filteredProducts$: Observable<ProductType[]>;
@@ -355,5 +368,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
       maxPrice: null,
       sortBy: 'title-asc'
     });
+  }
+
+  addToCart(product: ProductType) {
+    this.cartStore.addToCart(product);
+    // Kısa bir süreliğine başarı göstergesi gösterebiliriz
+    // Bu isteğe bağlı, basit bir implementation için skip edebiliriz
   }
 }

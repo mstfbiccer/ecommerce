@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpEvent } from '@angular/common/http';
 import { Observable, map, retry, timer, throwError } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface ProductType {
   id: number;
@@ -24,9 +25,18 @@ export interface CategoryType {
   providedIn: 'root'
 })
 export class Product {
-  private baseUrl = 'https://fakestoreapi.com';
+  private platformId = inject(PLATFORM_ID);
+  private baseUrl: string;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Use local API endpoints for better SSR performance and caching
+    if (isPlatformBrowser(this.platformId)) {
+      this.baseUrl = '/api'; // Client-side: use relative URL
+    } else {
+      // Server-side: use absolute URL for internal requests
+      this.baseUrl = process.env['SSR_API_BASE_URL'] || 'http://localhost:4000/api';
+    }
+  }
 
   list(): Observable<ProductType[]> {
     return this.http.get<ProductType[]>(`${this.baseUrl}/products`).pipe(

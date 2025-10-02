@@ -4,12 +4,13 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { appRoutes } from './app.route';
 import { httpRequestInterceptor } from './core/interceptors/http-request.interceptor';
 import { httpResponseInterceptor } from './core/interceptors/http-response.interceptor';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes),
     provideHttpClient(withInterceptors([httpRequestInterceptor, httpResponseInterceptor])),
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZoneChangeDetection({ eventCoalescing: true }), provideClientHydration(withEventReplay()),
   ]
 };

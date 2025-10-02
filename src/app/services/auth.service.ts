@@ -1,5 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface User {
   username: string;
@@ -17,6 +18,7 @@ export interface LoginCredentials {
 export class AuthService {
   private readonly currentUser = signal<User | null>(null);
   private readonly isLoading = signal(false);
+  private readonly platformId = inject(PLATFORM_ID);
 
   // Computed signals
   readonly user = this.currentUser.asReadonly();
@@ -78,22 +80,28 @@ export class AuthService {
   }
 
   private initializeFromStorage(): void {
-    const stored = localStorage.getItem('currentUser');
-    if (stored) {
-      try {
-        const user = JSON.parse(stored);
-        this.currentUser.set(user);
-      } catch {
-        this.clearStorage();
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('currentUser');
+      if (stored) {
+        try {
+          const user = JSON.parse(stored);
+          this.currentUser.set(user);
+        } catch {
+          this.clearStorage();
+        }
       }
     }
   }
 
   private saveToStorage(user: User): void {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    }
   }
 
   private clearStorage(): void {
-    localStorage.removeItem('currentUser');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('currentUser');
+    }
   }
 }

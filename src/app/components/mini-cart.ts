@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CartStore } from '../services/cart.store';
 
 @Component({
@@ -148,7 +149,9 @@ import { CartStore } from '../services/cart.store';
               
               <!-- Action Buttons -->
               <div class="space-y-3">
-                <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                <button 
+                  (click)="goToCart()"
+                  class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
                   <div class="flex items-center justify-center space-x-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.8 9M7 13l-1.8-9m0 0h15.4M7 13h10"></path>
@@ -211,10 +214,16 @@ import { CartStore } from '../services/cart.store';
 })
 export class MiniCartComponent {
   cartStore = inject(CartStore);
+  router = inject(Router);
   isOpen = false;
 
   toggleCart() {
     this.isOpen = !this.isOpen;
+  }
+
+  goToCart() {
+    this.router.navigate(['/cart']);
+    this.isOpen = false;
   }
 
   increaseQuantity(productId: number) {
